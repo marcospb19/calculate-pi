@@ -5,8 +5,11 @@ A method I invented to calculate PI, little fun project.
 Taking this assumption from Daniel Shiffman, initial formula was gave by
 Daniel Shiffman, and then I explored this idea further.
 
-IDK
+IDK, is someone reading this?
 
-To compile:
+To compile it:
 ```sh
-clang -O2 -lm -Wall pi -o pi.c
+gcc -O2 -lm -Wall pi.c -o pi
+```
+
+You can also use clang instead of gcc
