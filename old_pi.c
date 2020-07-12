@@ -1,8 +1,7 @@
-#include <stdio.h>
-#include <math.h>
 #include <inttypes.h>
 #include <limits.h>
-
+#include <math.h>
+#include <stdio.h>
 
 /**
  * Little crazy project.
@@ -38,83 +37,82 @@
  * Maybe I'm getting crazy or something? xD
  */
 
+void simple_quadratic_method() {
+  const int MAXN = sqrt(INT_MAX) - 1;
+  const int DIST = MAXN * MAXN;
 
-void simple_quadratic_method()
-{
-	const int MAXN = sqrt(INT_MAX) - 1;
-	const int DIST = MAXN * MAXN;
+  const int OUTSIDE = MAXN * MAXN;
+  int inside = 0;
 
-	const int OUTSIDE = MAXN * MAXN;
-	int inside = 0;
+  printf("MAXN = %d\n", MAXN);
+  printf("DIST = %d\n", DIST);
 
-	printf("MAXN = %d\n" , MAXN);
-	printf("DIST = %d\n" , DIST);
+  for (int i = 1; i < MAXN; i++) {
+    for (int j = 0; j < MAXN; j++) {
+      int temp = i * i;
+      if (temp + j * j < DIST) {
+        inside++;
+      }
+    }
+  }
 
-	for (int i = 1 ; i < MAXN ; i++)
-	{
-		for (int j = 0 ; j < MAXN ; j++)
-		{
-			int temp = i * i;
-			if (temp + j * j < DIST)
-			{
-				inside++;
-			}
-		}
-	}
-
-	printf("points counted inside = %d\n" , ++inside);
-	printf("%.20lf\n" , (double)(inside) / OUTSIDE * 4);
+  printf("points counted inside = %d\n", ++inside);
+  printf("%.20lf\n", (double)(inside) / OUTSIDE * 4);
 }
 
+void optimized_64bit_linear_half_quadrant_method() {
+  const uint64_t MAXN = sqrt((double)ULONG_MAX) - 1;
+  const uint64_t DIST = MAXN * MAXN;
 
-void optimized_64bit_linear_half_quadrant_method()
-{
-	const uint64_t MAXN = sqrt(ULONG_MAX) - 1;
-	const uint64_t DIST = MAXN * MAXN;
+  const uint64_t OUTSIDE = MAXN * MAXN;
+  uint64_t inside = 0;
 
-	const uint64_t OUTSIDE = MAXN * MAXN;
-	uint64_t inside = 0;
+  printf("MAXN = %ld\n", MAXN);
+  printf("DIST = %ld\n", DIST);
 
-	printf("MAXN = %ld\n" , MAXN);
-	printf("DIST = %ld\n" , DIST);
+  uint64_t x = 1;
+  uint64_t y = MAXN;
 
-	uint64_t x = 1;
-	uint64_t y = MAXN;
+  uint64_t x_squared = x * x;
+  uint64_t y_squared = y * y;
 
-	uint64_t x_squared = x * x;
-	uint64_t y_squared = y * y;
+  int jumps = 0;
+  int last_jump = 0;
 
-	while (x < y)
-	{
-		if (x_squared + y_squared > DIST)
-		{
-			y--;
-			y_squared -= (y + y + 1);
-		}
+  while (x < y) {
+    if (x_squared + y_squared > DIST) {
+      y--;
+      y_squared -= (y + y + 1);
 
-		x_squared += (x + x + 1);
-		x++;
+      inside += jumps * (y - (x + 1));
 
-		inside += y - x;
-	}
+      last_jump = jumps;
+      jumps = last_jump - 1;
+      x += jumps;
+    }
 
-	inside -= x;
+    x_squared += (x + x + 1);
+    x++;
+    jumps++;
 
-	printf("points counted inside = %ld\n" , ++inside);
-	printf("MAXN = %ld\n" , MAXN);
-	printf("x = y = %ld\n" , x);
-	printf("%.20lf\n" , (double)(inside) / OUTSIDE * 8);
+    // inside += y - x;
+  }
+
+  inside -= x;
+
+  printf("points counted inside = %ld\n", ++inside);
+  printf("MAXN = %ld\n", MAXN);
+  printf("x = y = %ld\n", x);
+  printf("%.20lf\n", (double)(inside) / OUTSIDE * 8);
 }
 
+int main() {
+  // O(n²) with int32_t
+  // simple_quadratic_method();
 
-int main()
-{
-	// O(n²) with int32_t
-	// simple_quadratic_method();
+  // O(n) with int64_t (takes ~5.6s)
+  optimized_64bit_linear_half_quadrant_method();
 
-	// O(n) with int64_t (takes ~5.6s)
-	optimized_64bit_linear_half_quadrant_method();
-
-	// Unimplemented, will never finish on my computer
-	// optimized_128bit_linear_half_quadrant_method();
+  // Unimplemented, will never finish on my computer
+  // optimized_128bit_linear_half_quadrant_method();
 }
